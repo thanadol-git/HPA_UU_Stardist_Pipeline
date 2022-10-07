@@ -1,0 +1,8 @@
+n = roiManager("count");
+for (index = 0; index < n; index++) {
+    roiManager("select", index);
+    getSelectionCoordinates(x, y);
+    for (i = 0; i < x.length; i++) {
+        print(index + 1 + " " + x[i] + " " + y[i]);
+    }
+} 
