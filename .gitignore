@@ -5,3 +5,4 @@ Feria
 Output
 .ipynb_checkpoints/*
 .ipynb_checkpoints
+*.txt
