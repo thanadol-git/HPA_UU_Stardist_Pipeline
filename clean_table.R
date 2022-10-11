@@ -9,6 +9,17 @@ library(stringr)
 library(tidyverse)
 library(ggplot2)
 
+#### functions ----
+figure_dir <- "Output/"
+
+save_fn <- function(name, h =15, w = 20){
+  ggsave( paste(figure_dir, name, ".png", sep = ""), 
+          height = h, width = w, limitsize = FALSE,
+          dpi = 300, units = "cm", device = "png")
+  ggsave( paste(figure_dir, name, ".pdf", sep = ""), 
+          height = h, width = w, limitsize = FALSE,
+          dpi = 300, units = "cm", device = "pdf")
+}
 
 #### 1.2 Work directory ----
 current_path <- rstudioapi::getActiveDocumentContext()$path
@@ -44,7 +55,7 @@ sum_table %>%
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()
   ) + scale_y_reverse()
-  
+save_fn("Mimic_plot", h = 20, w= 20)
 #### Label table ----
 text_vec <- raw_text %>% 
   filter(!str_detect(V1, "Label")) %>% 
@@ -77,7 +88,26 @@ text_vec %>%
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) +
   scale_y_reverse()
-  
+save_fn("Overlap_plot", h = 20, w = 20)  
+
+
+text_vec %>% 
+  count(cellno) %>% 
+  ggplot(aes(x = n)) + 
+  geom_histogram(bins = 100) + 
+  theme_minimal() + 
+  labs(x = "cell size (pixel)", y = "Count")
+save_fn("Cell size dist")
+
+
+text_vec %>% 
+  count(cellno) %>%
+  mutate(cellno = as.numeric(cellno)) %>%
+  left_join(sum_table, by = "cellno") %>% 
+  ggplot(aes(x = Xcor, y = Ycor, size =log(n)))  +
+  geom_point(alpha = .2)  +
+  scale_y_reverse() + theme_minimal()
+save_fn("cell size overview", h = 20, w = 20)  
 text_vec %>% 
   count(Ycor, Xcor) %>%
   write.csv("Label/pixel_count.txt", row.names = FALSE)
